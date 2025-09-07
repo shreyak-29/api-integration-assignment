@@ -1,3 +1,85 @@
+# API Integration Assignment
+
+## Project Overview
+This is a Next.js 13+ app using the app directory structure. It integrates Firebase authentication and Cashfree payment gateway, styled with Tailwind CSS v4.
+
+## Setup Instructions
+
+### 1. Clone the Repository
+```sh
+# Replace with your repo URL
+git clone <your-repo-url>
+cd api-integration-assignment
+```
+
+### 2. Install Dependencies
+```sh
+npm install
+```
+
+### 3. Configure Environment Variables
+Create a `.env.local` file in the project root with your credentials:
+```
+FIREBASE_API_KEY=your_firebase_api_key
+FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+FIREBASE_PROJECT_ID=your_firebase_project_id
+FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+FIREBASE_APP_ID=your_firebase_app_id
+CASHFREE_SANDBOX_APP_ID=your_cashfree_app_id
+CASHFREE_SANDBOX_SECRET_KEY=your_cashfree_secret_key
+```
+
+### 4. Tailwind CSS v4 Setup
+- Tailwind is already configured for v4.
+- If you need to update `globals.css`, use:
+	```css
+	@import "tailwindcss/preflight";
+	@import "tailwindcss/utilities";
+	```
+- The config file is `tailwind.config.js`.
+
+### 5. Start the Development Server
+```sh
+npm run dev
+```
+
+### 6. Usage
+- Visit `http://localhost:3000` for the main page.
+- Go to `/checkout` for payment integration.
+- Authentication uses Firebase (Google Sign-In).
+
+### 7. Project Structure
+```
+app/
+	favicon.ico
+	globals.css
+	layout.js
+	page.js
+	api/
+		auth/
+			login/
+				route.js
+		createOrder/
+			route.js
+	checkout/
+		page.js
+	lib/
+		firebase.js
+		firebaseAdmin.js
+		mongodb.js
+	models/
+		user.js
+public/
+	...svg files
+```
+
+## Troubleshooting
+- If Tailwind styles are not visible, ensure you are using Tailwind v4 syntax in `globals.css` and have run `npm install`.
+- For Cashfree errors, check your environment variables and ensure the SDK is loaded using Next.js `<Script>`.
+
+## License
+MIT
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
