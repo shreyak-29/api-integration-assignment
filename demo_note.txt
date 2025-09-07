@@ -1,0 +1,26 @@
+API Integration Assignment - Demo Note
+
+1. API/Payment Gateway Chosen:
+- Cashfree Payment Gateway (Sandbox environment)
+- Firebase Authentication (Google Sign-In)
+
+2. Data Flow (input → process → output):
+- User visits the app and signs in using Google (Firebase Auth).
+- On the /checkout page, user enters (pre-filled)payment details (amount, name, email, phone).
+- When "Pay Now" is clicked:
+    - Frontend sends a POST request to `/api/createOrder` with payment details.
+    - Backend API route (`app/api/createOrder/route.js`) creates a Cashfree order using credentials from environment variables.
+    - Cashfree returns a `payment_session_id`.
+    - Frontend receives the session ID and launches the Cashfree Drop-in Checkout using the SDK.
+    - User completes payment in the Cashfree UI.
+    - Success/failure is shown in the UI.
+
+3. Challenges Faced & Solutions:
+- **Cashfree SDK not loading:**
+    - Solution: Used Next.js `<Script>` component with `strategy="afterInteractive"` for reliable client-side loading.
+- **Duplicate order ID errors:**
+    - Solution: Generate a unique order ID for every payment attempt.
+- **Environment variable issues:**
+    - Solution: Documented required variables in README and checked for presence in backend API.
+
+The demo runs end-to-end: user authentication, payment initiation, backend order creation, Cashfree UI, and result display. Minimal UI is provided for clarity and ease of testing.
