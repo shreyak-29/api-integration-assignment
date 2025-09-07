@@ -7,26 +7,30 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        user.getIdToken().then(token => {
-          fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ token }),
-          }).then(res => res.json()).then(data => {
-            setUser(data.user);
-            setLoading(false);
-          });
+ useEffect(() => {
+  const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      try {
+        const token = await user.getIdToken();
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
         });
-      } else {
-        setUser(null);
-        setLoading(false);
+        const data = await response.json();
+        setUser(data.user);
+      } catch (error) {
+        console.error("Error authenticating with backend:", error);
+        // Optionally sign the user out on the client if backend auth fails
+        auth.signOut(); 
       }
-    });
-    return () => unsubscribe();
-  }, []);
+    } else {
+      setUser(null);
+    }
+    setLoading(false);
+  });
+  return () => unsubscribe();
+}, []);
 
   // Show success alert after redirect from checkout
   useEffect(() => {
