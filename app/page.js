@@ -1,49 +1,53 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from './lib/firebase';
+"use client";
+import { useState, useEffect } from "react";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "./lib/firebase";
 
 export default function Home() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-  const unsubscribe = auth.onAuthStateChanged(async (user) => {
-    if (user) {
-      try {
-        const token = await user.getIdToken();
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token }),
-        });
-        const data = await response.json();
-        setUser(data.user);
-      } catch (error) {
-        console.error("Error authenticating with backend:", error);
-        // Optionally sign the user out on the client if backend auth fails
-        auth.signOut(); 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const token = await user.getIdToken();
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          });
+          const data = await response.json();
+          setUser(data.user);
+        } catch (error) {
+          console.error("Error authenticating with backend:", error);
+          // Optionally sign the user out on the client if backend auth fails
+          auth.signOut();
+        }
+      } else {
+        setUser(null);
       }
-    } else {
-      setUser(null);
-    }
-    setLoading(false);
-  });
-  return () => unsubscribe();
-}, []);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Show success alert after redirect from checkout
   useEffect(() => {
     try {
       const url = new URL(window.location.href);
-      const cfStatus = url.searchParams.get('cf_status');
-      const flag = sessionStorage.getItem('paymentSuccess');
-      if ((cfStatus && cfStatus.toUpperCase() === 'PAID') || flag === '1') {
-        alert('Payment successful!');
-        sessionStorage.removeItem('paymentSuccess');
-        url.searchParams.delete('cf_status');
-        url.searchParams.delete('cf_id');
-        window.history.replaceState({}, '', url.pathname + (url.search ? '?' + url.searchParams.toString() : ''));
+      const cfStatus = url.searchParams.get("cf_status");
+      const flag = sessionStorage.getItem("paymentSuccess");
+      if ((cfStatus && cfStatus.toUpperCase() === "PAID") || flag === "1") {
+        alert("Payment successful!");
+        sessionStorage.removeItem("paymentSuccess");
+        url.searchParams.delete("cf_status");
+        url.searchParams.delete("cf_id");
+        window.history.replaceState(
+          {},
+          "",
+          url.pathname + (url.search ? "?" + url.searchParams.toString() : "")
+        );
       }
     } catch (_e) {}
   }, []);
@@ -52,15 +56,15 @@ export default function Home() {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
-      alert('Google Sign-In Error: ' + error.message);
+      alert("Google Sign-In Error: " + error.message);
     }
   };
 
   // Payment logic removed. Use /checkout page for payments.
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
   }, []);
@@ -68,12 +72,25 @@ export default function Home() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className='bg-gray'>
-      <h1 className="text-4xl font-bold mb-6 text-center text-yellow-600">Trinity Packaging</h1>
+    <div className="bg-gray">
+      <h1 className="text-4xl font-bold mb-6 text-center text-yellow-600">
+        Trinity Packaging
+      </h1>
+      {/* Product name and image */}
+
       <div className="mb-8 text-center">
         {user ? (
           <div>
-            <p className="mb-4 text-white">Welcome, <b>{user.displayName || user.email}</b>!</p>
+            <p className="mb-4 text-white">
+              Welcome, <b>{user.displayName || user.email}</b>!
+            </p>
+            <div className="flex flex-col items-center mb-6">
+              <img src="/prod.png" alt="Product" className="w-24 h-24 mb-2" />
+              <div className="text-xl font-semibold text-gray-900">
+                PLASTIC PALLETS (1200 x 800 x 145)
+              </div>
+              <p className="font-semibold text-gray-900">1000 INR</p>
+            </div>
             <a
               href="/checkout"
               className="inline-block px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold mb-4 shadow hover:bg-blue-700 transition-colors"
