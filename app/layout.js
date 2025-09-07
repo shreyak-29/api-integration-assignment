@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -19,12 +20,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}> 
+      <head>
+        {/* ...existing code... */}
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}>
         <main className="flex min-h-screen items-center justify-center bg-background">
           <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-lg p-10 min-w-[340px] max-w-[420px] w-full">
             {children}
           </div>
         </main>
+        <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="afterInteractive" />
       </body>
     </html>
   );
