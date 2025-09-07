@@ -13,6 +13,8 @@ export async function POST(req) {
   }
 
   try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (req.headers.get('origin') || 'http://localhost:3000');
+    const returnUrl = `${baseUrl}/?cf_id={order_id}&cf_status={order_status}`;
     const payload = {
       order_id: orderId,
       order_amount: amount,
@@ -22,6 +24,9 @@ export async function POST(req) {
         customer_name: customerName,
         customer_email: customerEmail,
         customer_phone: customerPhone
+      },
+      order_meta: {
+        return_url: returnUrl
       }
     };
     console.log('Cashfree request payload:', payload);

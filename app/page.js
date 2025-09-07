@@ -28,6 +28,22 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
+  // Show success alert after redirect from checkout
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href);
+      const cfStatus = url.searchParams.get('cf_status');
+      const flag = sessionStorage.getItem('paymentSuccess');
+      if ((cfStatus && cfStatus.toUpperCase() === 'PAID') || flag === '1') {
+        alert('Payment successful!');
+        sessionStorage.removeItem('paymentSuccess');
+        url.searchParams.delete('cf_status');
+        url.searchParams.delete('cf_id');
+        window.history.replaceState({}, '', url.pathname + (url.search ? '?' + url.searchParams.toString() : ''));
+      }
+    } catch (_e) {}
+  }, []);
+
   const handleGoogleSignIn = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
@@ -48,12 +64,12 @@ export default function Home() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6 text-center">API Integration Assignment</h1>
+    <div className='bg-gray'>
+      <h1 className="text-4xl font-bold mb-6 text-center text-yellow-600">Trinity Packaging</h1>
       <div className="mb-8 text-center">
         {user ? (
           <div>
-            <p className="mb-4">Welcome, <b>{user.displayName || user.email}</b>!</p>
+            <p className="mb-4 text-white">Welcome, <b>{user.displayName || user.email}</b>!</p>
             <a
               href="/checkout"
               className="inline-block px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold mb-4 shadow hover:bg-blue-700 transition-colors"

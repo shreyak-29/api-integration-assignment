@@ -1,4 +1,50 @@
 @import "tailwindcss";
 
-/* Tailwind CSS is used for all styling. Custom styles removed. */
+:root {
+  /* Light mode colors */
+  --color-background: #f9fafb; /* soft light gray */
+  --color-foreground: #111827; /* near-black for strong contrast */
+}
 
+
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-semibold;
+}
+
+/* Buttons */
+button {
+  @apply px-4 py-2 rounded-lg transition-colors duration-200;
+}
+
+/* Button variants */
+.btn-primary {
+  @apply bg-[#0b6b6f] text-white hover:bg-[#095a5d];
+}
+
+.btn-secondary {
+  @apply bg-[#1f9ba8] text-white hover:bg-[#178a96];
+}
+
+/* Disabled button style */
+button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Form Inputs */
+input, select, textarea {
+  @apply border border-gray-300 rounded-lg px-3 py-2 w-full mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400;
+}
+
+/* Utility container class */
+.container {
+  @apply max-w-4xl mx-auto px-4 py-6;
+}

@@ -76,9 +76,20 @@ export default function Checkout() {
 
       // Initialize Cashfree and launch checkout with v3 API
       const cashfree = await window.Cashfree({ mode: 'sandbox' });
-      await cashfree.checkout({
+      const result = await cashfree.checkout({
         paymentSessionId: data.paymentSessionId
       });
+
+      if (result && (result.order && result.order.status === 'PAID' || result.status === 'SUCCESS')) {
+        setStatus('Payment Successful! Redirecting...');
+        try { sessionStorage.setItem('paymentSuccess', '1'); } catch (_e) {}
+        window.location.href = '/';
+        return;
+      }
+      if (result && (result.order && result.order.status === 'FAILED' || result.status === 'FAILED')) {
+        setStatus('Payment Failed.');
+        return;
+      }
     } catch (err) {
       setStatus('Error: ' + err.message);
       alert('Error: ' + err.message);
@@ -87,21 +98,50 @@ export default function Checkout() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-8 bg-white rounded-xl shadow">
-      <h2 className="text-2xl font-bold mb-6 text-center">Cashfree Payment Checkout</h2>
-      <form onSubmit={handlePay} className="space-y-4">
-        <input type="text" className="w-full border rounded px-3 py-2" value={orderId} onChange={e => setOrderId(e.target.value)} placeholder="Order ID" required />
-        <input type="number" className="w-full border rounded px-3 py-2" value={amount} onChange={e => setAmount(e.target.value)} placeholder="Amount" required />
-        <input type="text" className="w-full border rounded px-3 py-2" value={customerName} onChange={e => setCustomerName(e.target.value)} placeholder="Customer Name" required />
-        <input type="email" className="w-full border rounded px-3 py-2" value={customerEmail} onChange={e => setCustomerEmail(e.target.value)} placeholder="Customer Email" required />
-        <input type="tel" className="w-full border rounded px-3 py-2" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} placeholder="Customer Phone" required />
-        <button type="submit" className="w-full py-2 px-4 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 transition" disabled={loading}>
-          {loading ? 'Processing...' : 'Pay Now'}
+    <div className="wrap">
+      <h2 className="title">Cashfree Checkout</h2>
+      <form onSubmit={handlePay} className="form">
+        <div className="field">
+          <label className="label" htmlFor="orderId">Order ID</label>
+          <input id="orderId" type="text" className="input" value={orderId} onChange={e => setOrderId(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label className="label" htmlFor="amount">Amount (INR)</label>
+          <input id="amount" type="number" min="1" className="input" value={amount} onChange={e => setAmount(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label className="label" htmlFor="name">Customer Name</label>
+          <input id="name" type="text" className="input" value={customerName} onChange={e => setCustomerName(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label className="label" htmlFor="email">Customer Email</label>
+          <input id="email" type="email" className="input" value={customerEmail} onChange={e => setCustomerEmail(e.target.value)} required />
+        </div>
+        <div className="field">
+          <label className="label" htmlFor="phone">Customer Phone</label>
+          <input id="phone" type="tel" className="input" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} required />
+        </div>
+        <button type="submit" className="button" disabled={loading}>
+          {loading ? 'Processing…' : 'Pay Now'}
         </button>
       </form>
       {status && (
-        <div className="mt-4 text-center text-lg font-semibold text-green-600">{status}</div>
+        <div className="status" role="status">{status}</div>
       )}
+
+      <style jsx>{`
+        .wrap { max-width: 440px; margin: 40px auto; padding: 20px; background: #ffffff; border: 1px solid #e6e6e6; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+        .title { margin: 0 0 16px; font-size: 22px; font-weight: 700; text-align: center; color: #111827; }
+        .form { display: grid; gap: 12px; }
+        .field { display: grid; gap: 6px; }
+        .label { font-size: 13px; color: #374151; }
+        .input { height: 40px; padding: 0 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; outline: none; transition: border-color .15s ease, box-shadow .15s ease; }
+        .input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+        .button { height: 42px; border: 0; border-radius: 8px; background: #2563eb; color: #fff; font-weight: 600; cursor: pointer; transition: background .15s ease, opacity .15s ease; }
+        .button:hover { background: #1e4fcf; }
+        .button[disabled] { opacity: .6; cursor: not-allowed; }
+        .status { margin-top: 12px; padding: 10px; text-align: center; border-radius: 8px; background: #f0fdf4; color: #166534; font-weight: 600; }
+      `}</style>
     </div>
   );
 }
